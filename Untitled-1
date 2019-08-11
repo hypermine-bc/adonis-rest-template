@@ -1,0 +1,45 @@
+  this.addWheres = function ($query){
+      let filters = this.request.input('filters', '').split(",")
+
+      $relations.forEach((relation, index)=>{ $query.with(relation)})
+
+      filters.forEach(($value, $key)=>{
+        //If non equality operator
+        if ( Array.isArray($value)) {
+          $value.foreach($valueToOperate, $operator) {
+            switch ($operator) {
+              case 'lte':
+                $query = $query -> where($key, '<=', $valueToOperate);
+                break;
+              case 'lt':
+                $query = $query -> where($key, '<', $valueToOperate);
+                break;
+              case 'gte':
+                $query = $query -> where($key, '>=', $valueToOperate);
+                break;
+              case 'gt':
+                $query = $query -> where($key, '>', $valueToOperate);
+                break;
+              case 'startsWith':
+                $query = $query -> where($key, 'like', "{$valueToOperate}%");
+                break;
+              case 'endsWith':
+                $query = $query -> where($key, 'like', "%{$valueToOperate}");
+                break;
+              case 'between':
+                if (is_array($valueToOperate))
+                  $query = $query -> whereBetween($key, $valueToOperate);
+                break;
+              case 'in':
+                if (is_array($valueToOperate))
+                  $query = $query -> whereIn($key, $valueToOperate);
+                break;
+            }
+          }
+        } else {
+          $query = $query -> where($key, $value);
+        }
+      })
+
+      return $query
+    }
