@@ -34,6 +34,15 @@ class User extends Model {
   tokens () {
     return this.hasMany('App/Models/Token')
   }
+
+  /**
+   * A relationship on posts models
+   * It will return all the post for a user
+   * 
+   */
+  posts() {
+    return this.hasMany('App/Models/Post')
+  }
 }
 
 module.exports = User
