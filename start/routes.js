@@ -36,6 +36,8 @@ Route
 
     Route.resource('posts', 'PostController')
 
+    Route.resource('users', 'UserController')
+
   })
   .prefix('api/v1')
 
