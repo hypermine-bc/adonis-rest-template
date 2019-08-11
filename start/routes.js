@@ -20,19 +20,19 @@ Route.get('/', () => {
   return { greeting: 'Welcome to SuperBaseStack' }
 })
 
+Route
+  .post('authenticate', 'AuthController.login')
+  .validator('AuthLogin')
+
+Route
+  .post('register', 'AuthController.register')
+  .validator('AuthRegister')
+
 /**
  * Routes grouped as API
  */
 Route
   .group(() => {
-
-    Route
-      .post('authenticate', 'AuthController.login')
-      .validator('AuthLogin')
-
-    Route
-      .post('register', 'AuthController.register')
-      .validator('AuthRegister')
 
     Route.resource('posts', 'PostController')
 
