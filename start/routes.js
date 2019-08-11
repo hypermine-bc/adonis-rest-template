@@ -20,5 +20,10 @@ Route.get('/', () => {
   return { greeting: 'Hello world in JSON' }
 })
 
-Route.post('authenticate','AuthController.login');
-Route.post('register','AuthController.register');
+Route
+  .post('authenticate','AuthController.login')
+  .validator('AuthLogin')
+
+Route
+  .post('register','AuthController.register')
+  .validator('AuthRegister')
