@@ -71,6 +71,7 @@ Or perhaps you want to get vikram whoes id = 1
 {{HYPERMINE_API_HOST}}/api/v1/users/?filters=[{"username":"vikram"},{"id": 1}]
 ```
 
+### Attribute + Filters
 Lets get one step further, lets say you want to get
 Get user starts with `vi` and id=1 with posts and token
 
