@@ -43,3 +43,14 @@ Run the following command to run startup migrations.
 ```js
 adonis migration:run
 ```
+
+### Examples (for lazy developers)
+
+#### Attributes
+Lets say you want to get User with Posts and tokens
+
+You can do request API like
+
+```
+{{HYPERMINE_API_HOST}}/api/v1/users/?attributes=posts,tokens
+```
