@@ -7,6 +7,10 @@ class UserController extends BaseController {
     constructor() {
         super();
         this.model = User
+        this.allowedWiths = [
+            'posts',
+            'tokens'
+        ]
     }
 }
 
