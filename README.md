@@ -77,3 +77,8 @@ Get user starts with `vi` and id=1
 ```
 {{HYPERMINE_API_HOST}}/api/v1/users/?attributes=posts,tokens&filters=[{"username": [{"startsWith": "vi"}]},{"id": 1}]
 ```
+Some more ;)
+
+```
+{{HYPERMINE_API_HOST}}/api/v1/users/?attributes=posts,tokens&filters=[{"username": [{"endsWith": "ide"}]}]
+```
