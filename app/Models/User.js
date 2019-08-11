@@ -7,6 +7,14 @@ const Model = use('Model')
 const Hash = use('Hash')
 
 class User extends Model {
+  
+  /**
+   * Dont show password field
+   */
+  static get hidden() {
+    return ['password','']
+  }
+
   static boot () {
     super.boot()
 
@@ -33,6 +41,15 @@ class User extends Model {
    */
   tokens () {
     return this.hasMany('App/Models/Token')
+  }
+
+  /**
+   * A relationship on posts models
+   * It will return all the post for a user
+   * 
+   */
+  posts() {
+    return this.hasMany('App/Models/Post')
   }
 }
 

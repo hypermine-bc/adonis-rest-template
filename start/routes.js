@@ -17,13 +17,27 @@
 const Route = use('Route')
 
 Route.get('/', () => {
-  return { greeting: 'Hello world in JSON' }
+  return { greeting: 'Welcome to SuperBaseStack' }
 })
 
 Route
-  .post('authenticate','AuthController.login')
+  .post('authenticate', 'AuthController.login')
   .validator('AuthLogin')
 
 Route
-  .post('register','AuthController.register')
+  .post('register', 'AuthController.register')
   .validator('AuthRegister')
+
+/**
+ * Routes grouped as API
+ */
+Route
+  .group(() => {
+
+    Route.resource('posts', 'PostController')
+
+    Route.resource('users', 'UserController')
+
+  })
+  .prefix('api/v1')
+

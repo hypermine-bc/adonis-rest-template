@@ -12,16 +12,28 @@ This is the boilerplate for creating an API server in AdonisJs, it comes pre-con
 3. CORS
 4. Lucid ORM
 5. Migrations and seeds
+5. Pagination
+5. Resource
+
 
 ## Setup
+Install `Adonis`
+
+```bash
+npm i -g @adonisjs/cli
+```
 
 Use the adonis command to install the blueprint
 
 ```bash
-adonis new yardstick --api-only
+git clone https://github.com/hypermine-bc/adonis-rest-template.git
 ```
 
-or manually clone the repo and then run `npm install`.
+clone the repo and then run `npm install`.
+
+```bash
+adonis serve --dev
+```
 
 
 ### Migrations

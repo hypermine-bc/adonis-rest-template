@@ -7,7 +7,13 @@
 /**
  * Resourceful controller for interacting with basehttps
  */
-class BaseHttpController {
+class BaseController {
+  
+  constructor(){
+
+    this.model
+
+  }
   /**
    * Show a list of all basehttps.
    * GET basehttps
@@ -18,6 +24,11 @@ class BaseHttpController {
    * @param {View} ctx.view
    */
   async index ({ request, response, view }) {
+
+    let res = await this.model.all()
+
+    return response.json(res)
+
   }
 
   /**
@@ -90,4 +101,4 @@ class BaseHttpController {
   }
 }
 
-module.exports = BaseHttpController
+module.exports = BaseController
