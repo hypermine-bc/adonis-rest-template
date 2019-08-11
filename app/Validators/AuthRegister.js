@@ -8,7 +8,7 @@ class AuthRegister {
   get rules () {
     return {
       email: 'required|email|unique:users,email',
-      username: 'required',
+      username: 'required|unique:users,username',
       password: 'required'
     }
   }
@@ -19,6 +19,18 @@ class AuthRegister {
   get sanitizationRules() {
     // sanitize data before validation
   }
+
+  get messages() {
+    return {
+      'username.unique': 'You must provide unique username',
+      'username.required': 'You must provide username',
+      'email.required': 'You must provide a email address.',
+      'email.email': 'You must provide a valid email address.',
+      'email.unique': 'This email is already registered.',
+      'password.required': 'You must provide a password'
+    }
+  }
+  
 }
 
 module.exports = AuthRegister
