@@ -72,7 +72,7 @@ Or perhaps you want to get vikram whoes id = 1
 ```
 
 Lets get one step further, lets say you want to get
-Get user starts with `vi` and id=1
+Get user starts with `vi` and id=1 with posts and token
 
 ```
 {{HYPERMINE_API_HOST}}/api/v1/users/?attributes=posts,tokens&filters=[{"username": [{"startsWith": "vi"}]},{"id": 1}]
