@@ -197,6 +197,18 @@ class BaseController {
    */
   async destroy ({ params, request, response }) {
   }
+
+  async delete({ params, response }) {
+    const entity = await this.model.find(params.id)
+
+    if (!entity) {
+      return response.status(404).json({ data: 'Resource not found' })
+    }
+
+    await entity.delete()
+
+    return response.status(204).json(null)
+  }
 }
 
 module.exports = BaseController
