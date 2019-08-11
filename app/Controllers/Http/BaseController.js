@@ -5,6 +5,7 @@
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
 const InvalidFilterJsonException = use('App/Exceptions/InvalidFilterJsonException')
+const FilterParser = use('App/Helpers/FilterParser')
 
 /**
  * Resourceful controller for interacting with basehttps
@@ -19,11 +20,11 @@ class BaseController {
     this.response
 
     this.addWheres = function ($query) {
-      let req = this.request.input('filters', '{}')
-      
+      let req = this.request.input("filters", "[]")
+      let filters = [];
       try{
 
-        let filters = JSON.parse(req)
+        filters = JSON.parse(req)
 
       } catch (error) {
 
@@ -31,46 +32,11 @@ class BaseController {
 
       }
 
-      filters.forEach(($value, $key) => {
-        //If non equality operator
-        if (Array.isArray($value)) {
-          $value.foreach(($valueToOperate, $operator)=> {
-            switch ($operator) {
-              case 'lte':
-                $query = $query.where($key, '<=', $valueToOperate);
-                break;
-              case 'lt':
-                $query = $query.where($key, '<', $valueToOperate);
-                break;
-              case 'gte':
-                $query = $query.where($key, '>=', $valueToOperate);
-                break;
-              case 'gt':
-                $query = $query.where($key, '>', $valueToOperate);
-                break;
-              case 'startsWith':
-                $query = $query.where($key, 'like', "{$valueToOperate}%");
-                break;
-              case 'endsWith':
-                $query = $query.where($key, 'like', "%{$valueToOperate}");
-                break;
-              case 'between':
-                if (is_array($valueToOperate))
-                  $query = $query.whereBetween($key, $valueToOperate);
-                break;
-              case 'in':
-                if (is_array($valueToOperate))
-                  $query = $query.whereIn($key, $valueToOperate);
-                break;
-            }
-          })
-        } else {
-          $query = $query.where($key, $value);
-        }
+      console.log('filters',filters)
 
-      })
+      let filter = new FilterParser()
 
-      return $query
+      return filter.parse($query, filters)
     }
 
     this.addWiths = function ($query,$relations){
