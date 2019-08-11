@@ -4,6 +4,9 @@
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
+const InvalidFilterJsonException = use('App/Exceptions/InvalidFilterJsonException')
+const FilterParser = use('App/Helpers/FilterParser')
+
 /**
  * Resourceful controller for interacting with basehttps
  */
@@ -15,6 +18,26 @@ class BaseController {
     this.allowedWiths
     this.request
     this.response
+
+    this.addWheres = function ($query) {
+      let req = this.request.input("filters", "[]")
+      let filters = [];
+      try{
+
+        filters = JSON.parse(req)
+
+      } catch (error) {
+
+        throw new InvalidFilterJsonException()
+
+      }
+
+      console.log('filters',filters)
+
+      let filter = new FilterParser()
+
+      return filter.parse($query, filters)
+    }
 
     this.addWiths = function ($query,$relations){
       $relations.forEach(relation=>{ $query.with(relation)})
@@ -54,6 +77,7 @@ class BaseController {
 
     let query = this.model.query()
     query = this.addWiths(query, this.getwiths())
+    query = this.addWheres(query)
     let res = await query.fetch()
     // let res = await query.fetch()
 
