@@ -6,6 +6,7 @@
 
 const InvalidFilterJsonException = use('App/Exceptions/InvalidFilterJsonException')
 const FilterParser = use('App/Helpers/FilterParser')
+const { validate } = use('Validator')
 
 /**
  * Resourceful controller for interacting with basehttps
@@ -18,6 +19,7 @@ class BaseController {
     this.allowedWiths
     this.request
     this.response
+    this.updatable
 
     this.addWheres = function ($query) {
       let req = this.request.input("filters", "[]")
@@ -31,8 +33,6 @@ class BaseController {
         throw new InvalidFilterJsonException()
 
       }
-
-      console.log('filters',filters)
 
       let filter = new FilterParser()
 
@@ -49,12 +49,23 @@ class BaseController {
       let res = req.filter(value => -1 !== this.allowedWiths.indexOf(value))
       return res
     }
-  }
 
-  
+    this.getValidator = function (){
+    }
 
-  async validattions(){
-    return {}
+    this.preCreate = function (data) {
+      
+      return data 
+      
+    }
+    this.postCreate = function (data) {}
+
+    this.preUpdate = function (data) {
+      
+      return data 
+      
+    }
+    this.postUpdate = function (data) {}
   }
 
   async addWheres($query) {
@@ -79,22 +90,9 @@ class BaseController {
     query = this.addWiths(query, this.getwiths())
     query = this.addWheres(query)
     let res = await query.fetch()
-    // let res = await query.fetch()
 
     return response.json(res)
 
-  }
-
-  /**
-   * Render a form to be used for creating a new basehttp.
-   * GET basehttps/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
   }
 
   /**
@@ -107,18 +105,24 @@ class BaseController {
    */
   async store ({ request, response }) {
 
-    const bookInfo = request.only(['title', 'isbn', 'publisher_name', 'author_name'])
+    let rules = this.getValidators().rules;
+    let messages = this.getValidators().messages;
+    
+    const validation = await validate(request.all(), rules, messages)
+    
+    if (validation.fails()) {
+      return response.status(422).json(validation.messages())
+    }
 
-    const data = new this.model()
+    let dataToCreate = request.only(Object.keys(rules));
 
-    book.title = bookInfo.title
-    book.isbn = bookInfo.isbn
-    book.publisher_name = bookInfo.publisher_name
-    book.author_name = bookInfo.author_name
+    dataToCreate = this.preCreate(dataToCreate);
 
-    await book.save()
+    let data = await this.model.create(dataToCreate);
 
-    return response.status(201).json(book)
+    this.postCreate(data)
+
+    return response.status(201).json(data)
 
   }
 
@@ -133,22 +137,19 @@ class BaseController {
    */
   async show ({ params, request, response, view }) {
 
-    const res = await this.model.find(params.id)
+    this.request = request
+    this.response = response
+
+    let query = this.model.query()
+
+    query = this.addWiths(query, this.getwiths())
+
+    query = query.where({ id: params.id})
+
+    let res = await query.fetch()
 
     return response.json(res)
 
-  }
-
-  /**
-   * Render a form to update an existing basehttp.
-   * GET basehttps/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
   }
 
   /**
@@ -160,6 +161,30 @@ class BaseController {
    * @param {Response} ctx.response
    */
   async update ({ params, request, response }) {
+    const entity = await this.model.find(params.id)
+
+    if (!entity) {
+      return response.status(404).json({ data: 'Resource not found' })
+    }
+    let rules = this.getValidators().rules;
+    let messages = this.getValidators().messages;
+
+    const validation = await validate(request.all(), rules, messages)
+
+    if (validation.fails()) {
+      return response.status(422).json(validation.messages())
+    }
+
+    let dataToUpdate = request.only(Object.keys(rules))
+
+    entity.merge(dataToUpdate)
+
+    let data = await entity.save()
+
+    this.postUpdate(data)
+
+    return response.status(201).json(data)
+
   }
 
   /**

@@ -9,7 +9,7 @@ class FilterParser {
             let $value = values[$key]
 
             //If non equality operator
-            if (Array.isArray($value)) {
+            if (Array.isArray($value)) { 
                 $value.forEach((operators) => {
                     let $operator = Object.keys(operators)[0]
                     let $valueToOperate = operators[$operator]
