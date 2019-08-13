@@ -21,6 +21,7 @@ class BaseController {
     this.response
     this.updatable
 
+
     this.addWheres = function ($query) {
       let req = this.request.input("filters", "[]")
       let filters = [];
@@ -86,10 +87,13 @@ class BaseController {
     this.request = request
     this.response = response
 
+    const page = this.request.input("page", 1)
+
     let query = this.model.query()
     query = this.addWiths(query, this.getwiths())
     query = this.addWheres(query)
-    let res = await query.fetch()
+    
+    let res = await query.paginate(page)
 
     return response.json(res)
 
