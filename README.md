@@ -153,3 +153,15 @@ Some more ;)
 ```
 {{HYPERMINE_API_HOST}}/api/v1/users/?attributes=posts,tokens&filters=[{"username": [{"endsWith": "ide"}]}]
 ```
+#### Logging 
+
+Finally we have logging Out-Of-The_box 
+
+As explained in Adonis framework the access log you can fine in your
+tmp/adonis.log file.
+
+Ex: Loggin an update method 
+
+```
+{"userid":2,"controller":"UserController","method":"update()","data":{},"time":"Mon Aug 19 2019 01:14:09 GMT+0530 (IST)","level":"info","message":"Resource-id : 5"}
+```

@@ -8,6 +8,7 @@ const InvalidFilterJsonException = use('App/Exceptions/InvalidFilterJsonExceptio
 const InvalidSearchQueryException = use('App/Exceptions/InvalidSearchQueryException')
 const FilterParser = use('App/Helpers/FilterParser')
 const { validate } = use('Validator')
+const Logger = use('Logger')
 
 /**
  * Resourceful controller for interacting with basehttps
@@ -22,7 +23,25 @@ class BaseController {
     this.response
     this.updatable
     this.searchable
+    this.logData = {
+      userid:"",
+      controller:"",
+      method:"",
+      data:{}
+    }
 
+    this.accessLog = function (auth, message, method, ControllerName, data={}) {
+      var d = Date(Date.now());
+      this.logData.userid = auth.user.id
+      this.logData.method = method
+      this.logData.controller = ControllerName
+      this.logData.data = data
+      this.logData.time = d.toString()
+      
+      Logger
+        .transport('file')
+        .info(message,this.logData)
+    }
 
     this.addWheres = function ($query) {
       let req = this.request.input("filters", "[]")
@@ -100,7 +119,7 @@ class BaseController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index ({ request, response }) {
+  async index({ request, response, auth }) {
     this.request = request
     this.response = response
 
@@ -112,6 +131,8 @@ class BaseController {
     query = this.addSearchables(query)
     
     let res = await query.paginate(page)
+
+    this.accessLog(auth, "", "index()", this.constructor.name)
 
     return response.json(res)
 
@@ -125,7 +146,7 @@ class BaseController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store ({ request, response }) {
+  async store({ request, response, auth }) {
 
     let rules = this.getValidators().rules;
     let messages = this.getValidators().messages;
@@ -144,6 +165,8 @@ class BaseController {
 
     this.postCreate(data)
 
+    this.accessLog(auth, "", "store()", this.constructor.name)
+
     return response.status(201).json(data)
 
   }
@@ -157,7 +180,7 @@ class BaseController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response }) {
+  async show({ params, request, response, auth }) {
 
     this.request = request
     this.response = response
@@ -169,6 +192,8 @@ class BaseController {
     query = query.where({ id: params.id})
 
     let res = await query.fetch()
+
+    this.accessLog(auth, "", "show()", this.constructor.name)
 
     return response.json(res)
 
@@ -182,7 +207,7 @@ class BaseController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update ({ params, request, response }) {
+  async update({ params, request, response, auth }) {
     const entity = await this.model.find(params.id)
 
     if (!entity) {
@@ -205,6 +230,8 @@ class BaseController {
 
     this.postUpdate(data)
 
+    this.accessLog(auth, "Resource-id : " + params.id, "update()", this.constructor.name)
+
     return response.status(201).json(data)
 
   }
@@ -220,7 +247,7 @@ class BaseController {
   async destroy ({ params, request, response }) {
   }
 
-  async delete({ params, response }) {
+  async delete({ params, response, auth }) {
     const entity = await this.model.find(params.id)
 
     if (!entity) {
@@ -228,6 +255,8 @@ class BaseController {
     }
 
     await entity.delete()
+
+    this.accessLog(auth, "Resource-id : " + params.id, "delete()", this.constructor.name)
 
     return response.status(204).json(null)
   }

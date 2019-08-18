@@ -39,5 +39,6 @@ Route
     Route.resource('users', 'UserController')
 
   })
+  .middleware(['auth'])
   .prefix('api/v1')
 
