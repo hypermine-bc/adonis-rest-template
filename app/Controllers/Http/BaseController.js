@@ -5,6 +5,7 @@
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
 const InvalidFilterJsonException = use('App/Exceptions/InvalidFilterJsonException')
+const InvalidSearchQueryException = use('App/Exceptions/InvalidSearchQueryException')
 const FilterParser = use('App/Helpers/FilterParser')
 const { validate } = use('Validator')
 
@@ -20,6 +21,7 @@ class BaseController {
     this.request
     this.response
     this.updatable
+    this.searchable
 
 
     this.addWheres = function ($query) {
@@ -38,6 +40,25 @@ class BaseController {
       let filter = new FilterParser()
 
       return filter.parse($query, filters)
+    }
+
+    this.addSearchables = function ($query) {
+      let req = this.request.input("query", "")
+      
+      try{
+        if(req)
+        {
+          this.searchable.forEach(columnName => {
+            $query.orWhere(columnName, 'like', '%' + req + '%')
+          })
+        }
+      } catch (error) {
+
+        throw new InvalidSearchQueryException()
+
+      }
+
+      return $query
     }
 
     this.addWiths = function ($query,$relations){
@@ -69,10 +90,6 @@ class BaseController {
     this.postUpdate = function (data) {}
   }
 
-  async addWheres($query) {
-    
-  }
-
 
   /**
    * Show a list of all basehttps.
@@ -83,7 +100,7 @@ class BaseController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
+  async index ({ request, response }) {
     this.request = request
     this.response = response
 
@@ -92,6 +109,7 @@ class BaseController {
     let query = this.model.query()
     query = this.addWiths(query, this.getwiths())
     query = this.addWheres(query)
+    query = this.addSearchables(query)
     
     let res = await query.paginate(page)
 
@@ -139,7 +157,7 @@ class BaseController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
+  async show ({ params, request, response }) {
 
     this.request = request
     this.response = response
