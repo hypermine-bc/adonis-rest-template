@@ -22,6 +22,12 @@ class UserController extends BaseController {
             'password'
         ]
 
+        this.searchable = [
+            'username',
+            'email',
+            'id'
+        ]
+
         this.getValidators = function () {
             return new UserValidations()
             // return validations.rules
