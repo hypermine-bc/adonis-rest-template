@@ -46,6 +46,76 @@ adonis migration:run
 
 ### Examples (for lazy developers)
 
+#### Example User Controller
+
+We are lazy developers Right! :stuck_out_tongue_winking_eye:
+
+So lets make the controller as lean as possible :wink:
+
+Pay attention to these variables, that are defined 
+
+allowedWiths
+updatable,
+searchable
+
+```
+'use strict'
+const BaseController = use('App/Controllers/Http/BaseController')
+const UserValidations = use('App/Validators/AuthRegister')
+const User = use('App/Models/User');
+
+class UserController extends BaseController {
+
+    constructor() {
+
+        super();
+        
+        this.model = User
+
+        this.allowedWiths = [
+            'posts',
+            'tokens'
+        ]
+
+        this.updatable = [
+            'username',
+            'email',
+            'password'
+        ]
+
+        this.searchable = [
+            'username',
+            'email',
+            'id'
+        ]
+
+        this.getValidators = function () {
+            return new UserValidations()
+            // return validations.rules
+        }
+    }
+}
+
+module.exports = UserController
+
+```
+
+#### Search 
+
+Yes! you got it right search is out of the box for every resource that extends baseController.
+
+Ex 1 : Search for user contains vik
+
+```
+{{HYPERMINE_API_HOST}}/api/v1/users/?query=vik
+```
+Ex 2 : Search for user contains Vik with Posts and token
+```
+{{HYPERMINE_API_HOST}}/api/v1/users/?query=vik&attributes=posts,tokens
+```
+Look how easy it was right :wink:
+
+
 #### Attributes
 Lets say you want to get User with Posts and tokens
 
